@@ -877,7 +877,7 @@
         const hoy = ahoraLocal().dia;
 
         raiz.innerHTML = `
-        ${L.demo && !EMBEBIDO ? (L.demoPara ? `
+        ${L.demo && !EMBEBIDO && !/[?&]pub=1/.test(location.search) ? (L.demoPara ? `
         <div class="cinta cinta-para" role="note">
             <span class="cinta-txt"><strong>Demo preparada para ${esc(L.demoPara)} por Santa Automatiza</strong><span class="cinta-sub">${esc(L.demoNota || "Los precios, direcciones y horarios son de ejemplo.")}</span></span>
         </div>` : `

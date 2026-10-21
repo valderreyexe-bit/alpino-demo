@@ -363,8 +363,8 @@ input:focus-visible + .marca-op { outline: 3px solid var(--texto); outline-offse
 .campo > span, .campo > legend { font-weight: 600; font-size: .9375rem; padding: 0; }
 .campo > legend { margin-bottom: 8px; }
 .campo em { font-style: normal; font-weight: 400; color: var(--suave); }
-.campo input[type="text"] { width: 100%; min-height: 54px; padding: 10px 14px; border-radius: 12px; border: 1.5px solid var(--borde-campo); background: var(--sup); font-size: 1rem; }
-.campo input[type="text"]:focus { outline: 3px solid var(--tinte-2); border-color: var(--marca); }
+.campo input[type="text"], .campo input[type="tel"] { width: 100%; min-height: 54px; padding: 10px 14px; border-radius: 12px; border: 1.5px solid var(--borde-campo); background: var(--sup); font-size: 1rem; }
+.campo input[type="text"]:focus, .campo input[type="tel"]:focus { outline: 3px solid var(--tinte-2); border-color: var(--marca); }
 .campo select { width: 100%; min-height: 54px; padding: 10px 14px; border-radius: 12px; border: 1.5px solid var(--borde-campo); background: var(--sup); color: inherit; font: inherit; font-size: 1rem; }
 .campo select:focus { outline: 3px solid var(--tinte-2); border-color: var(--marca); }
 .campo input::placeholder { color: #8b8b95; opacity: 1; }
