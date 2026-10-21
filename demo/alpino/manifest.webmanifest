@@ -1,0 +1,8 @@
+{
+  "name": "Heladerías Al-Pino",
+  "short_name": "Heladerías Al-Pino",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#1A3D37"
+}

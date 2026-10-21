@@ -1,0 +1,13 @@
+{
+  "name": "Panel de mi local",
+  "short_name": "Mi local",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F3F4F8",
+  "theme_color": "#0A0E26",
+  "icons": [
+    { "src": "../img/marca/icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "../img/marca/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

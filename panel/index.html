@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Panel del local</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0A0E26">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mi local">
+<link rel="icon" type="image/png" href="../img/marca/favicon-32.png">
+<link rel="apple-touch-icon" href="../img/marca/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="panel.css?v=9a0c2446">
+<script defer src="panel.js?v=47bae363"></script>
+</head>
+<body>
+
+<!-- ============ CARGANDO ============ -->
+<main id="v-cargando" class="vista centro">
+  <div class="girando" aria-hidden="true"></div>
+  <p class="nota">Cargando tu local…</p>
+</main>
+
+<!-- ============ ENTRAR ============ -->
+<main id="v-entrar" class="vista entrar" hidden>
+  <div class="marca">santa<i aria-hidden="true"></i></div>
+  <h1>Panel de tu local</h1>
+  <p class="nota">Entrá con tu mail y contraseña.</p>
+  <form id="f-entrar" class="formulario" novalidate>
+    <div class="campo">
+      <label for="e-mail">Mail</label>
+      <input id="e-mail" type="email" autocomplete="username" inputmode="email" required>
+    </div>
+    <div class="campo">
+      <label for="e-clave">Contraseña</label>
+      <input id="e-clave" type="password" autocomplete="current-password" required minlength="8">
+    </div>
+    <p class="error" id="e-error" role="alert"></p>
+    <button class="btn" type="submit" id="e-boton">Entrar</button>
+  </form>
+  <button class="btn-link" type="button" id="e-olvide">¿Te olvidaste la contraseña?</button>
+</main>
+
+<!-- ============ RECUPERAR ============ -->
+<main id="v-recuperar" class="vista entrar" hidden>
+  <div class="marca">santa<i aria-hidden="true"></i></div>
+  <h1>Recuperar contraseña</h1>
+  <p class="nota">Escribí el mail de tu cuenta y te mandamos un link para elegir una contraseña nueva.</p>
+  <form id="f-recuperar" class="formulario" novalidate>
+    <div class="campo">
+      <label for="rp-mail">Mail</label>
+      <input id="rp-mail" type="email" autocomplete="username" inputmode="email" required>
+    </div>
+    <p class="error" id="rp-error" role="alert"></p>
+    <button class="btn" type="submit" id="rp-boton">Mandarme el link</button>
+  </form>
+  <p class="formulario listo" id="rp-listo" hidden><b>Revisá tu mail.</b> Si esa dirección tiene cuenta, en unos minutos te llega el link. Fijate también en spam o promociones.</p>
+  <button class="btn-link" type="button" id="rp-volver">Volver</button>
+</main>
+
+<!-- ============ CONTRASEÑA NUEVA ============ -->
+<main id="v-clave" class="vista entrar" hidden>
+  <div class="marca">santa<i aria-hidden="true"></i></div>
+  <h1 id="cl-titulo">Contraseña nueva</h1>
+  <p class="nota">Elegí la contraseña con la que vas a entrar. Mínimo 8 caracteres.</p>
+  <form id="f-clave" class="formulario" novalidate>
+    <div class="campo">
+      <label for="cl-nueva">Contraseña nueva</label>
+      <input id="cl-nueva" type="password" autocomplete="new-password" required minlength="8">
+    </div>
+    <div class="campo">
+      <label for="cl-repetir">Repetila</label>
+      <input id="cl-repetir" type="password" autocomplete="new-password" required minlength="8">
+    </div>
+    <p class="error" id="cl-error" role="alert"></p>
+    <button class="btn" type="submit" id="cl-boton">Guardar contraseña</button>
+  </form>
+</main>
+
+<!-- ============ SIN LOCAL ============ -->
+<main id="v-sin-acceso" class="vista entrar" hidden>
+  <div class="marca">santa<i aria-hidden="true"></i></div>
+  <h1>Tu cuenta todavía no tiene un local</h1>
+  <p class="nota">Entraste como <b id="sin-mail"></b>, pero esta cuenta no está conectada a ningún local de pedidos. Escribinos y lo dejamos listo.</p>
+  <button class="btn btn-linea" type="button" data-salir>Salir</button>
+</main>
+
+<!-- ============ EL PANEL ============ -->
+<div id="v-app" class="vista app" hidden>
+  <p class="demo-banda" id="demo-banda" hidden>
+    <span><b>Modo demo.</b> Lo que cambies se ve en la tienda de demo, en este mismo dispositivo.</span>
+    <a id="demo-tienda" href="#" target="_blank" rel="noopener">Ver la tienda</a>
+  </p>
+
+  <div class="lateral">
+  <header class="cabeza">
+    <div class="cabeza-fila">
+      <div class="cabeza-txt">
+        <p class="cabeza-chico">Tu local</p>
+        <h1 id="local-nombre">—</h1>
+      </div>
+      <button class="btn-icono" type="button" id="b-menu" aria-label="Más opciones" aria-haspopup="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+      </button>
+    </div>
+    <section class="estado" id="estado" aria-live="polite"></section>
+  </header>
+
+  <nav class="pestanas" aria-label="Secciones">
+    <a href="#pedidos" data-pestana="pedidos" data-ventas hidden>Pedidos<b class="burbuja" id="burbuja" hidden></b></a>
+    <a href="#clientes" data-pestana="clientes" data-ventas hidden>Clientes</a>
+    <a href="#carta" data-pestana="carta">Carta</a>
+    <a href="#horarios" data-pestana="horarios">Horarios</a>
+  </nav>
+  <p class="lateral-pie" id="lateral-pie"><a id="lateral-tienda" href="#" target="_blank" rel="noopener">Ver mi tienda ↗</a></p>
+  </div>
+
+  <!-- PEDIDOS: lo que entró por la tienda, con su estado, y los números del mes -->
+  <main id="p-pedidos" class="pagina" hidden>
+    <section class="numeros" id="numeros" aria-label="Tus números"></section>
+    <div class="chips" id="chips-pedidos" role="group" aria-label="Qué pedidos mostrar"></div>
+    <div id="lista-pedidos" class="pedidos"></div>
+  </main>
+
+  <!-- CLIENTES: el club de sellos, quién vuelve, quién trajo amigos y a quién escribirle -->
+  <main id="p-clientes" class="pagina" hidden>
+    <section class="numeros" id="numeros-clientes" aria-label="Tus clientes"></section>
+    <div class="club-info" id="club-info"></div>
+    <div class="buscar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+      <label class="oculto" for="buscar-clientes">Buscar un cliente</label>
+      <input id="buscar-clientes" type="search" placeholder="Buscar por nombre o celular" autocomplete="off">
+    </div>
+    <div class="chips" id="chips-clientes" role="group" aria-label="Qué clientes mostrar"></div>
+    <div id="lista-clientes" class="clientes"></div>
+  </main>
+
+  <!-- CARTA -->
+  <main id="p-carta" class="pagina" hidden>
+    <div class="buscar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+      <label class="oculto" for="buscar">Buscar en la carta</label>
+      <input id="buscar" type="search" placeholder="Buscar un producto o gusto" autocomplete="off">
+    </div>
+    <div class="barra">
+      <div class="chips" id="chips" role="group" aria-label="Qué productos mostrar"></div>
+      <div class="fila-acciones">
+        <button class="btn btn-linea chico" type="button" id="b-reponer" hidden>Volver todo a “Hay”</button>
+        <button class="btn btn-linea chico" type="button" id="b-porcentaje">Subir o bajar precios</button>
+      </div>
+    </div>
+    <div id="carta" class="carta"></div>
+  </main>
+
+  <!-- HORARIOS -->
+  <main id="p-horarios" class="pagina" hidden>
+    <p class="nota">Los días y horarios en que tu tienda recibe pedidos. Si cerrás pasada la medianoche, poné la hora igual (por ejemplo, de 19:00 a 01:00).</p>
+    <form id="f-horarios" class="dias" novalidate></form>
+    <p class="error" id="h-error" role="alert"></p>
+    <button class="btn" type="submit" form="f-horarios" id="h-guardar">Guardar horarios</button>
+  </main>
+</div>
+
+<!-- ============ MENÚ ============ -->
+<div class="menu" id="menu" hidden>
+  <button type="button" id="m-tienda">Ver mi tienda</button>
+  <button type="button" id="m-clave">Cambiar contraseña</button>
+  <button type="button" id="m-reiniciar" hidden>Volver la demo a como estaba</button>
+  <button type="button" id="m-sonido">Probar el sonido de pedido nuevo</button>
+  <div class="menu-rubros" id="m-rubros" hidden>
+    <span>Probar otro rubro</span>
+    <a href="?demo=heladeria">Heladería</a><a href="?demo=pizzeria">Pizzería</a><a href="?demo=hamburgueseria">Hamburguesería</a><a href="?demo=rotiseria">Rotisería</a>
+  </div>
+  <button type="button" data-salir>Salir</button>
+</div>
+
+<!-- ============ DIÁLOGO ============ -->
+<div class="fondo-dialogo" id="fondo-dialogo" hidden>
+  <div class="dialogo" role="dialog" aria-modal="true" aria-labelledby="dlg-titulo">
+    <h2 id="dlg-titulo"></h2>
+    <div id="dlg-cuerpo"></div>
+    <div class="dlg-botones">
+      <button class="btn btn-linea" type="button" id="dlg-no">Cancelar</button>
+      <button class="btn" type="button" id="dlg-si">Listo</button>
+    </div>
+  </div>
+</div>
+
+<div class="aviso" id="aviso" role="status" aria-live="polite" hidden></div>
+<div class="alerta-pedido" id="alerta-pedido" role="alert" hidden></div>
+</body>
+</html>
