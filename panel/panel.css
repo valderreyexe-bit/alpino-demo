@@ -299,3 +299,12 @@ button { cursor: pointer; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 @media (min-width: 560px) { .fondo-dialogo { align-items: center; } }
+
+/* ---------- Sucursales y pedidos de playa ---------- */
+.chips-suc { overflow-x: auto; padding: 4px 0 10px; scrollbar-width: none; }
+.chips-suc::-webkit-scrollbar { display: none; }
+.chips-suc .chip { flex: none; white-space: nowrap; }
+.pedido-suc { margin: -2px 0 6px; font-size: 13.5px; color: var(--gris); }
+.tag-playa { display: inline-block; padding: 2px 9px; border-radius: 999px; background: #fff3d6; color: #7a5200; font-weight: 700; font-size: 13px; }
+.ver-mapa { font-weight: 700; color: var(--azul); }
+.barras-suc .barra-fila { grid-template-columns: 7.5em 1fr 5.8em; }

@@ -513,11 +513,11 @@
   const telWa = (t) => { const d = String(t || '').replace(/\D/g, ''); if (d.length < 8) return ''; return d.startsWith('54') ? d : '549' + d.replace(/^0/, '').replace(/^(\d{2,4})15/, '$1'); };
   const urlTienda = () => { try { return new URL(st.negocio.tienda, location.href).href.split('?')[0]; } catch (e) { return ''; } };
   const tituloBase = () => 'Panel · ' + (st.negocio ? st.negocio.nombre : '');
-  st.pedidos = []; st.ventas = false; st.club = null; st.filtroPed = 'curso'; st.filtroCli = 'todos'; st.buscaCli = ''; st.vistos = null; st.sinVer = 0;
+  st.pedidos = []; st.ventas = false; st.club = null; st.suc = ''; st.filtroPed = 'curso'; st.filtroCli = 'todos'; st.buscaCli = ''; st.vistos = null; st.sinVer = 0;
 
   /* ---------- Demo: pedidos guardados en este celular + historial de ejemplo ---------- */
   const CLAVE_PED = () => 'sa-pedidos-demo:' + DEMOS[DEMO];
-  const CLAVE_EJ = () => 'sa-pedidos-demo-ejemplo:' + DEMOS[DEMO];
+  const CLAVE_EJ = () => 'sa-pedidos-demo-ejemplo2:' + DEMOS[DEMO];
   const CLAVE_EST = () => 'sa-pedidos-demo-estados:' + DEMOS[DEMO];
   // Un mes de pedidos de ejemplo armado con la carta del local (siempre el mismo para cada demo)
   function ejemploDemo(L) {
@@ -528,6 +528,9 @@
     (L.categorias || []).forEach((c) => (c.productos || []).forEach((p) => { if (p.precio > 0 && !p.soloRetiro) prods.push(p); }));
     if (!prods.length) return [];
     const zonas = (L.entrega && L.entrega.zonas) || [].concat(...(L.sucursales || []).map((s) => (s.entrega && s.entrega.zonas) || []));
+    const sucs = L.sucursales || [];
+    const sucDeZona = (z) => sucs.find((s) => ((s.entrega && s.entrega.zonas) || []).some((x) => x.nombre === z.nombre));
+    const bajadas = ['Bajada 14 · Balneario Sol', 'Bajada 32 · Parador Mareas', 'Bajada 5 · Balneario Los Pinos', 'Bajada 21 · Balneario Delfín', 'Bajada 9 · Parador del Sur'];
     const calles = ['Calle 3 N° 1250', 'Av. Costanera 480', 'Calle 52 N° 336', 'Calle 7 N° 910', 'Calle 38 N° 145', 'Calle 1 N° 2210'];
     const gente = [['Juli', 6], ['Martín', 4], ['Caro', 4], ['Nico', 3], ['Flor', 3], ['Seba', 2], ['Lu', 2], ['Agus', 2], ['Ramiro', 2], ['Vale', 1], ['Tomi', 1], ['Sofi', 1], ['Diego', 1], ['Meli', 1]];
     const codigos = gente.map((g, i) => 'EJ' + String(1000 + i * 37).slice(-4));
@@ -546,11 +549,15 @@
         const items = [];
         const n = 1 + Math.floor(azar() * 2);
         for (let j = 0; j < n; j++) { const p = uno(prods), c = 1 + Math.floor(azar() * 2); items.push({ n: p.nombre, c, d: '', t: p.precio * c }); }
-        const esDel = zonas.length && azar() < 0.75, z = esDel ? uno(zonas) : null;
+        const hoyJuli = nombre === 'Juli' && dias === 0;
+        const esDel = zonas.length && (hoyJuli || azar() < 0.75), z = esDel ? uno(zonas) : null;
+        const suc = z ? (sucDeZona(z) || uno(sucs) || {}) : (uno(sucs) || {});
+        const playa = esDel && (hoyJuli || azar() < 0.2);
+        const dir = !esDel ? '' : playa ? '🏖️ Playa: ' + uno(bajadas) + ' (' + uno(['sombrilla roja', 'carpa azul', 'cerca del mar', 'toalla amarilla']) + ')' + (azar() < 0.6 ? ' · https://maps.google.com/?q=-36.54,-56.70' : '') : uno(calles);
         const origen = nombre === 'Vale' || nombre === 'Tomi' ? 'amigo' : uno(['ig', 'ig', 'ig', 'qr', 'qr', 'wa', 'wa', 'directo']);
         lista.push({
           ejemplo: true, codigo: `EJ-${String(lista.length + 101)}`, creado, estado: dias === 0 && nombre === 'Juli' ? 'confirmado' : (azar() < 0.04 ? 'cancelado' : 'entregado'),
-          nombre, tel, modo: esDel ? 'delivery' : 'retiro', zona: z ? z.nombre : '', direccion: esDel ? uno(calles) : '', items,
+          nombre, tel, modo: esDel ? 'delivery' : 'retiro', zona: z ? z.nombre : '', direccion: dir, sucursal: suc.nombre || '', items,
           total: items.reduce((s, x) => s + x.t, 0) + (z ? z.costo || 0 : 0), pago: uno(['Efectivo', 'Transferencia', 'Mercado Pago']),
           origen, amigo: origen === 'amigo' ? codigos[0] : '', cliente: codigos[gi]
         });
@@ -645,11 +652,24 @@
     document.title = (n ? `(${n}) ` : '') + tituloBase();
   }
 
+  /* ---------- Sucursales: cada una ve lo suyo, el dueño ve todo ---------- */
+  const sucursalesDe = () => (window.LOCAL && window.LOCAL.sucursales) || [];
+  const cortoSuc = (n) => String(n || '').replace(/^Sucursal\s+/i, '');
+  const pedidosVis = () => (st.suc ? st.pedidos.filter((p) => p.sucursal === st.suc) : st.pedidos);
+  function pintarChipsSuc() {
+    const el = $('#chips-suc'); if (!el) return;
+    const l = sucursalesDe();
+    if (l.length < 2) { el.innerHTML = ''; el.hidden = true; return; }
+    el.hidden = false;
+    el.innerHTML = `<button class="chip" type="button" data-fsuc="" aria-pressed="${!st.suc}">Todas</button>` + l.map((x) => `<button class="chip" type="button" data-fsuc="${esc(x.nombre)}" aria-pressed="${st.suc === x.nombre}">${esc(cortoSuc(x.nombre))}</button>`).join('');
+  }
+
   /* ---------- Números ---------- */
   function numerosHTML() {
     const ahora = Date.now(), hoy = diaAR(new Date().toISOString());
-    const mes = st.pedidos.filter((p) => cuenta(p) && ahora - new Date(p.creado) < 30 * DIA_MS);
-    const deHoy = st.pedidos.filter((p) => p.estado !== 'cancelado' && diaAR(p.creado) === hoy);
+    const vis = pedidosVis();
+    const mes = vis.filter((p) => cuenta(p) && ahora - new Date(p.creado) < 30 * DIA_MS);
+    const deHoy = vis.filter((p) => p.estado !== 'cancelado' && diaAR(p.creado) === hoy);
     const plataMes = mes.reduce((s, p) => s + (p.total || 0), 0);
     const clientes = new Map();
     mes.forEach((p) => { const k = claveCliente(p); clientes.set(k, (clientes.get(k) || 0) + 1); });
@@ -663,23 +683,43 @@
       <div class="num"><span>Últimos 30 días</span><b>${plata(plataMes)}</b><small>${mes.length} ${mes.length === 1 ? 'pedido' : 'pedidos'}</small></div>
       <div class="num destacado"><span>Comisión que no pagaste</span><b>${plata(plataMes * COMISION_APP / 100)}</b><small>Lo que se habría llevado una app que cobra ${COMISION_APP}%</small></div>
       <div class="num"><span>Clientes que volvieron</span><b>${volvieron} de ${clientes.size}</b><small>pidieron más de una vez en 30 días</small></div>
+      ${sucTarjeta(mes)}
       ${filas.length ? `<div class="num ancho"><span>Por dónde llegan</span>
         <div class="barras">${filas.map(([o, n]) => `<div class="barra-fila"><em>${esc(o)}</em><i data-w="${Math.max(6, Math.round(n / max * 100))}"></i><b>${n}</b></div>`).join('')}</div></div>` : ''}`;
   }
 
+  function sucTarjeta(mes) {
+    if (st.suc || sucursalesDe().length < 2) return '';
+    const cuenta = {}; mes.forEach((p) => { if (p.sucursal) { const o = cuenta[p.sucursal] || (cuenta[p.sucursal] = { n: 0, t: 0 }); o.n += 1; o.t += p.total || 0; } });
+    const filas = Object.entries(cuenta).sort((a, b) => b[1].t - a[1].t);
+    if (!filas.length) return '';
+    const max = filas[0][1].t || 1;
+    return `<div class="num ancho"><span>Ventas por sucursal (30 días)</span>
+        <div class="barras barras-suc">${filas.map(([n, o]) => `<div class="barra-fila"><em>${esc(cortoSuc(n))}</em><i data-w="${Math.max(6, Math.round(o.t / max * 100))}"></i><b>${plata(o.t)}</b></div>`).join('')}</div></div>`;
+  }
+
   /* ---------- Lista de pedidos ---------- */
   function pintarPedidos() {
+    pintarChipsSuc();
     $('#numeros').innerHTML = numerosHTML();
     document.querySelectorAll('#numeros [data-w]').forEach((i) => { i.style.width = i.dataset.w + '%'; }); // por JS: la seguridad del panel no deja estilos escritos en el HTML
-    const enCurso = st.pedidos.filter((p) => p.estado === 'nuevo' || p.estado === 'confirmado');
+    const enCurso = pedidosVis().filter((p) => p.estado === 'nuevo' || p.estado === 'confirmado');
     const hoy = diaAR(new Date().toISOString());
-    const deHoy = st.pedidos.filter((p) => diaAR(p.creado) === hoy);
+    const deHoy = pedidosVis().filter((p) => diaAR(p.creado) === hoy);
     const chip = (k, txt, n) => `<button class="chip" type="button" data-fped="${k}" aria-pressed="${st.filtroPed === k}">${txt} <b>${n}</b></button>`;
-    $('#chips-pedidos').innerHTML = chip('curso', 'En curso', enCurso.length) + chip('hoy', 'Hoy', deHoy.length) + chip('todos', 'Todos', st.pedidos.length);
-    const lista = st.filtroPed === 'curso' ? enCurso : st.filtroPed === 'hoy' ? deHoy : st.pedidos.slice(0, 80);
+    $('#chips-pedidos').innerHTML = chip('curso', 'En curso', enCurso.length) + chip('hoy', 'Hoy', deHoy.length) + chip('todos', 'Todos', pedidosVis().length);
+    const lista = st.filtroPed === 'curso' ? enCurso : st.filtroPed === 'hoy' ? deHoy : pedidosVis().slice(0, 80);
     $('#lista-pedidos').innerHTML = lista.length ? lista.map(pedidoHTML).join('')
       : `<p class="vacio">${st.filtroPed === 'curso' ? 'No hay pedidos en curso. Cuando un cliente mande uno desde tu tienda, aparece acá con un aviso.' : 'Todavía no hay pedidos.'}</p>`;
     pintarBurbuja();
+  }
+  function dondeHTML(p) {
+    const hora = p.hora ? ` · para las ${esc(String(p.hora).split(' ').pop())}` : '';
+    if (p.modo !== 'delivery') return `<p class="pedido-donde">🏪 Retira en ${p.sucursal ? esc(p.sucursal) : 'el local'}${hora}</p>`;
+    const m = String(p.direccion || '').match(/^(.*?)(?: · (https:\/\/maps\.google\.com\/\?q=[-\d.,]+))?$/);
+    const dir = m ? m[1] : (p.direccion || ''), mapa = m && m[2];
+    const playa = dir.indexOf('🏖️') === 0;
+    return `<p class="pedido-donde">${playa ? '<span class="tag-playa">🏖️ Playa</span> ' : '🛵 '}Delivery a ${esc(p.zona)}${dir ? ` · ${esc(playa ? dir.replace(/^🏖️\s*Playa:\s*/, '') : dir)}` : ''}${mapa ? ` · <a class="ver-mapa" href="${esc(mapa)}" target="_blank" rel="noopener">Ver en el mapa</a>` : ''}${hora}</p>${p.sucursal ? `<p class="pedido-suc">Lo prepara: ${esc(p.sucursal)}</p>` : ''}`;
   }
   function pedidoHTML(p) {
     const i = st.pedidos.indexOf(p);
@@ -691,7 +731,7 @@
     const wa = telWa(p.tel);
     return `<article class="pedido ${p.estado}${st.resaltado === p.codigo ? ' resaltado' : ''}">
       <header><div><b>${esc(p.nombre || 'Cliente')}</b><small>${esc(p.codigo)} · ${horaAR(p.creado)} · ${hace(p.creado)}</small></div><span class="est ${p.estado}">${ESTADOS[p.estado] || esc(p.estado)}</span></header>
-      <p class="pedido-donde">${p.modo === 'delivery' ? `🛵 Delivery a ${esc(p.zona)}${p.direccion ? ` · ${esc(p.direccion)}` : ''}` : `🏪 Retira en ${p.sucursal ? esc(p.sucursal) : 'el local'}`}${p.hora ? ` · para las ${esc(String(p.hora).split(' ').pop())}` : ''}</p>
+      ${dondeHTML(p)}
       <ul class="pedido-items">${(p.items || []).map((x) => `<li><span>${x.c}× ${esc(x.n)}${x.d ? `<small>${esc(x.d)}</small>` : ''}</span><b>${plata(x.t)}</b></li>`).join('')}</ul>
       ${p.nota ? `<p class="pedido-nota">📝 ${esc(p.nota)}</p>` : ''}
       <p class="pedido-total"><span>${esc(p.pago || '')}${p.origen && p.origen !== 'directo' ? ` · <em class="origen">${esc(ORIGENES[p.origen] || p.origen)}</em>` : ''}</span><b>${plata(p.total)}</b></p>
@@ -965,6 +1005,7 @@
       pintarHorarios(); aviso('Copiado a todos los días. Revisalo y tocá “Guardar horarios”.'); return;
     }
     if (b.dataset.chip !== undefined) { st.soloAgotados = b.dataset.chip === 'agotados'; pintarCarta(); return; }
+    if (b.dataset.fsuc !== undefined) { st.suc = b.dataset.fsuc; pintarPedidos(); return; }
     if (b.dataset.fped !== undefined) { st.filtroPed = b.dataset.fped; pintarPedidos(); return; }
     if (b.dataset.fcli !== undefined) { st.filtroCli = b.dataset.fcli; pintarClientes(); return; }
     if (b.dataset.estado !== undefined) { const [i, e] = b.dataset.estado.split(':'); cambiarEstado(Number(i), e); return; }
