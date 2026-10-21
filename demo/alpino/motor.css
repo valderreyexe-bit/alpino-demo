@@ -597,3 +597,37 @@ html.simple .sim { font-size: .9375rem; }
 .playa-gps.on { border-color: var(--marca); color: var(--marca); }
 .cats a:focus-visible, .cat-sig:focus-visible { outline: 3px solid var(--sobre-marca); outline-offset: 2px; }
 input:focus, select:focus { border-color: var(--marca); }
+
+/* ---------- Compu: mejor distribución (sin huecos en blanco) ---------- */
+.cab-extra { margin-top: 16px; }
+.cab:has(.cab-extra > :not([hidden])) { padding-bottom: 0; }
+.cab-extra:not(:has(> :not([hidden]))) { display: none; }
+@media (min-width: 960px) {
+    .cab:has(.cab-extra > :not([hidden])) { padding-bottom: 28px; }
+    .cab .entrega { grid-row: 2 / span 12; }
+    /* Promos y club al lado, debajo del buscador: llenan la columna izquierda */
+    .cab-extra { grid-column: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; margin-top: 18px; align-items: stretch; }
+    .cab-extra > .franja, .cab-extra > .club, .por-cat .cab-extra > .club, .por-cat .cab-extra > .franja { border: 0; padding: 0; }
+    .cab-extra .franja > h2 { display: none; }
+    .cab-extra .fila-x, .por-cat .cab-extra .fila-x { display: grid; gap: 8px; padding: 0; overflow: visible; height: 100%; }
+    .cab-extra .promo, .por-cat .cab-extra .promo { width: 100%; height: 100%; min-height: 72px; padding: 12px 14px; }
+    .cab-extra .promo-det { display: block; }
+    .cab-extra .club { align-content: stretch; }
+    .cab-extra .club-caja, .por-cat .cab-extra .club-caja { height: 100%; padding: 12px 14px; }
+    .por-cat .cab-extra .club-txt span { display: block; }
+    /* Los más pedidos: tarjetas que ocupan todo el ancho */
+    .por-cat .franja { padding: 22px 0 18px; }
+    .por-cat .franja .fila-x { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 18px; overflow: visible; padding-top: 12px; }
+    .por-cat .tarjeta { width: auto; }
+    .por-cat .tarjeta-img { width: 100%; height: 170px; }
+    .tarjeta-img .dib { width: 62%; height: 62%; }
+    .por-cat .tarjeta .prod-acc { top: 120px; right: 10px; }
+    .por-cat .tarjeta-nom { font-size: 1rem; }
+    .tarjeta-abrir:hover .tarjeta-img { box-shadow: inset 0 0 0 2px var(--tinte-2); }
+    /* Categorías alineadas con el resto */
+    .por-cat .cats { padding: 12px var(--lado); gap: 10px; }
+    /* Sucursales en dos columnas: la info del local queda pareja */
+    .caja-sucs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 32px; align-items: start; }
+    .caja-sucs > h3, .caja-sucs > .suc-nota { grid-column: 1 / -1; }
+    .pie .caja-sucs { grid-row: 2 / span 4; }
+}

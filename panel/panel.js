@@ -214,7 +214,7 @@
     if (!DEMO && !st.sesion) { mostrar('entrar'); return; } // la sesión venció mientras cargaba
     if (!hay) { $('#sin-mail').textContent = st.sesion ? st.sesion.mail || '' : ''; mostrar('sin-acceso'); return; }
     document.title = 'Panel · ' + st.negocio.nombre;
-    $('#local-nombre').textContent = st.negocio.nombre;
+    $('#local-nombre').textContent = st.negocio.nombre.replace(/-/g, '\u2011'); // guion que no corta: "Al-Pino" no queda partido
     if (st.negocio.logo && !$('.cabeza-logo')) { const im = new Image(); im.className = 'cabeza-logo'; im.alt = ''; im.src = st.negocio.logo; $('.cabeza-txt').before(im); }
     $('#demo-banda').hidden = !DEMO;
     $('#demo-tienda').href = st.negocio.tienda;
@@ -684,7 +684,7 @@
       <div class="num destacado"><span>Comisión que no pagaste</span><b>${plata(plataMes * COMISION_APP / 100)}</b><small>Lo que se habría llevado una app que cobra ${COMISION_APP}%</small></div>
       <div class="num"><span>Clientes que volvieron</span><b>${volvieron} de ${clientes.size}</b><small>pidieron más de una vez en 30 días</small></div>
       ${sucTarjeta(mes)}
-      ${filas.length ? `<div class="num ancho"><span>Por dónde llegan</span>
+      ${filas.length ? `<div class="num ancho graf"><span>Por dónde llegan</span>
         <div class="barras">${filas.map(([o, n]) => `<div class="barra-fila"><em>${esc(o)}</em><i data-w="${Math.max(6, Math.round(n / max * 100))}"></i><b>${n}</b></div>`).join('')}</div></div>` : ''}`;
   }
 
@@ -694,7 +694,7 @@
     const filas = Object.entries(cuenta).sort((a, b) => b[1].t - a[1].t);
     if (!filas.length) return '';
     const max = filas[0][1].t || 1;
-    return `<div class="num ancho"><span>Ventas por sucursal (30 días)</span>
+    return `<div class="num ancho graf"><span>Ventas por sucursal (30 días)</span>
         <div class="barras barras-suc">${filas.map(([n, o]) => `<div class="barra-fila"><em>${esc(cortoSuc(n))}</em><i data-w="${Math.max(6, Math.round(o.t / max * 100))}"></i><b>${plata(o.t)}</b></div>`).join('')}</div></div>`;
   }
 

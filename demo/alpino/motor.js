@@ -916,11 +916,8 @@
                     <button type="button" class="buscar-x" data-borrar aria-label="Borrar la búsqueda" hidden>${ico("x")}</button>
                 </label>
             </div>
+            <div class="cab-extra">${franjaPromos()}${clubHTML()}</div>
         </header>
-
-        ${franjaPromos()}
-
-        ${clubHTML()}
 
         ${destacados.length ? `
         <section class="franja" aria-label="Los más pedidos">

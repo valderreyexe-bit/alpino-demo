@@ -308,3 +308,26 @@ button { cursor: pointer; }
 .tag-playa { display: inline-block; padding: 2px 9px; border-radius: 999px; background: #fff3d6; color: #7a5200; font-weight: 700; font-size: 13px; }
 .ver-mapa { font-weight: 700; color: var(--azul); }
 .barras-suc .barra-fila { grid-template-columns: 7.5em 1fr 5.8em; }
+
+/* ---------- Compu: mejor distribución (sin huecos en blanco) ---------- */
+@media (min-width: 1000px) {
+  .cabeza h1 { font-size: 21px; line-height: 1.2; overflow-wrap: normal; }
+  .estado .btn { min-height: 0; padding: 10px 14px; font-size: 15px; }
+  .pagina { max-width: 1280px; }
+  /* Los dos gráficos uno al lado del otro */
+  .num.graf { grid-column: span 2; }
+  .num.graf:only-of-type, .num.graf:last-child:nth-child(5) { grid-column: 1 / -1; }
+  /* Pedidos y clientes en grilla, no una columna larga */
+  .pedidos { grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
+  .clientes { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); align-items: stretch; }
+  .cliente { align-content: start; }
+}
+@media (min-width: 1300px) {
+  .dias { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .carta { columns: 3; }
+}
+@media (min-width: 1000px) {
+  .cabeza h1 { font-size: 19px; }
+  .estado .btn { font-size: 14px; white-space: nowrap; }
+  .num.graf { align-content: start; }
+}
