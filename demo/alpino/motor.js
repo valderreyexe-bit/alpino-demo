@@ -862,7 +862,8 @@
             </div>
         </section>`;
     }
-    const enlazarIr = ctx => $$("[data-ir]", ctx).forEach(b => b.addEventListener("click", () => { const d = document.getElementById(b.dataset.ir); if (d) d.scrollIntoView({ behavior: "smooth", block: "start" }); }));
+    let mostrarCat = null;
+    const enlazarIr = ctx => $$("[data-ir]", ctx).forEach(b => b.addEventListener("click", () => { const id = b.dataset.ir; if (id.startsWith("cat-") && typeof mostrarCat === "function") { mostrarCat(id.slice(4)); return; } const d = document.getElementById(id); if (d) d.scrollIntoView({ behavior: "smooth", block: "start" }); }));
     function pintarPromos() {
         const viejo = MULTI && $("[data-promos]", raiz);
         if (!viejo) return;
@@ -932,11 +933,12 @@
         </nav>
 
         <main class="carta">
-            ${L.categorias.map(c => `
-            <section class="cat" id="cat-${esc(c.id)}">
+            ${L.categorias.map((c, i) => `
+            <section class="cat${i ? "" : " cat-act"}" id="cat-${esc(c.id)}">
                 <h2>${esc(c.nombre)}</h2>
                 ${c.nota ? `<p class="cat-nota">${esc(c.nota)}</p>` : ""}
                 <div class="prods">${c.productos.map(filaProducto).join("")}</div>
+                ${L.categorias[i + 1] ? `<button type="button" class="cat-sig" data-sig="${esc(L.categorias[i + 1].id)}"><span>Seguir con</span><strong>${esc(L.categorias[i + 1].nombre)}</strong><i aria-hidden="true">→</i></button>` : ""}
             </section>`).join("")}
             <p class="sin-result" role="status" hidden></p>
         </main>
@@ -961,18 +963,20 @@
 
         // Navegación
         enlazarIr(raiz);
-        $$(".cats a", raiz).forEach(a => a.addEventListener("click", ev => { ev.preventDefault(); document.getElementById("cat-" + a.dataset.cat).scrollIntoView({ behavior: "smooth", block: "start" }); }));
-        if ("IntersectionObserver" in window) {
-            const io = new IntersectionObserver(ents => ents.forEach(en => {
-                if (!en.isIntersecting) return;
-                $$(".cats a", raiz).forEach(a => {
-                    const act = "cat-" + a.dataset.cat === en.target.id;
-                    a.classList.toggle("activa", act);
-                    if (act && a.parentElement.scrollWidth > a.parentElement.clientWidth) a.parentElement.scrollTo({ left: a.offsetLeft - 16, behavior: "smooth" });
-                });
-            }), { rootMargin: "-25% 0px -65% 0px" });
-            $$(".cat", raiz).forEach(s => io.observe(s));
-        }
+        // Una categoría por vez: sin scroll infinito
+        raiz.classList.add("por-cat");
+        mostrarCat = (id, subir = true) => {
+            $$(".cat", raiz).forEach(s => s.classList.toggle("cat-act", s.id === "cat-" + id));
+            $$(".cats a", raiz).forEach(a => {
+                const act = a.dataset.cat === id;
+                a.classList.toggle("activa", act);
+                if (act && a.parentElement.scrollWidth > a.parentElement.clientWidth) a.parentElement.scrollTo({ left: a.offsetLeft - 16, behavior: "smooth" });
+            });
+            const q = $("#buscar", raiz); if (q && q.value) { q.value = ""; q.dispatchEvent(new Event("input")); }
+            if (subir) { const t = $(".cats", raiz); if (t) window.scrollTo({ top: Math.max(0, t.getBoundingClientRect().top + window.scrollY - (parseInt(getComputedStyle(raiz).getPropertyValue("--cinta-h")) || 0)), behavior: "smooth" }); }
+        };
+        $$(".cats a", raiz).forEach(a => a.addEventListener("click", ev => { ev.preventDefault(); mostrarCat(a.dataset.cat); }));
+        $$("[data-sig]", raiz).forEach(b => b.addEventListener("click", () => mostrarCat(b.dataset.sig)));
         $$("[data-abrir]", raiz).forEach(b => b.addEventListener("click", () => abrirProducto(b.dataset.abrir)));
         $("[data-pedido]", raiz).addEventListener("click", () => abrirPedido());
         $$("[data-planes]", raiz).forEach(a => a.addEventListener("click", ev => { ev.preventDefault(); irAPlanes(); }));

@@ -555,3 +555,45 @@ html.simple .sim { font-size: .9375rem; }
 .playa-tg::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px #0003}
 .playa-sw.on .playa-tg{background:#e9a93a}.playa-sw.on .playa-tg::after{left:21px}
 .playa-gps{width:100%;margin:-4px 0 14px;justify-content:center}.playa-gps.on{border-color:#2e9e5b;color:#2e7d4a}
+
+/* ---------- Una categoría por vez + pestañas con los colores de la marca ---------- */
+.por-cat:not(.buscando) .cat:not(.cat-act) { display: none; }
+.por-cat .cats { gap: 8px; padding: 10px 16px; border-top-width: 0; border-bottom: 1px solid var(--linea); }
+.por-cat .cats a { padding: 9px 16px; border: 1.5px solid var(--tinte-2); border-radius: 999px; background: var(--sup); color: var(--marca); font-weight: 700; }
+.por-cat .cats a.activa { background: var(--marca); border-color: var(--marca); color: var(--sobre-marca); }
+.por-cat .cat { padding-top: 18px; }
+.por-cat .cat h2 { color: var(--marca); }
+.cat-sig { display: flex; align-items: center; gap: 8px; width: 100%; margin: 14px 0 6px; padding: 16px 18px; border-radius: 14px; background: var(--tinte); color: var(--marca); text-align: left; font-size: .9375rem; }
+.cat-sig strong { flex: 1; font-size: 1rem; }
+.cat-sig i { font-style: normal; font-weight: 800; font-size: 1.25rem; }
+.por-cat.buscando .cat-sig { display: none; }
+
+/* ---------- Bloques de arriba más compactos (menos scroll antes de la carta) ---------- */
+.por-cat .franja { padding: 12px 0 8px; border-top-width: 6px; }
+.por-cat .franja > h2 { font-size: 1.0625rem; }
+.por-cat .fila-x { padding-top: 8px; }
+.por-cat .promo { width: min(84%, 260px); padding: 10px 12px; align-items: center; background: var(--tinte); border-color: var(--tinte-2); }
+.por-cat .promo-det { display: none; }
+.por-cat .promo-pie { margin-top: 3px; }
+.por-cat .promo-ico { width: 34px; height: 34px; }
+.por-cat .club { padding: 10px 16px 12px; border-top-width: 6px; }
+.por-cat .club-txt span { display: none; }
+.por-cat .club-caja { padding: 10px 14px; }
+.por-cat .tarjeta, .por-cat .tarjeta-img { width: 118px; }
+.por-cat .tarjeta-img { height: 104px; }
+.por-cat .tarjeta .prod-acc { top: 62px; right: 6px; }
+.por-cat .tarjeta-nom { font-size: .875rem; }
+
+/* ---------- Botones y detalles con los colores de la marca ---------- */
+.modo input:checked + span { background: var(--marca); color: var(--sobre-marca); box-shadow: none; }
+.btn-wa { background: var(--marca); color: var(--sobre-marca); }
+.g-tag.obligatorio { background: var(--marca); color: var(--sobre-marca); }
+.g-tag.listo { background: var(--tinte); color: var(--marca); }
+.grupo:not(.pedir) .g-cab-in { background: var(--tinte); }
+.aviso-wa { background: var(--tinte); border-left: 4px solid var(--sobre-marca); color: var(--texto); }
+.playa-sw { border-color: var(--tinte-2); background: var(--tinte); }
+.playa-sw.on { border-color: var(--sobre-marca); background: color-mix(in srgb, var(--sobre-marca) 35%, #fff); }
+.playa-sw.on .playa-tg { background: var(--marca); }
+.playa-gps.on { border-color: var(--marca); color: var(--marca); }
+.cats a:focus-visible, .cat-sig:focus-visible { outline: 3px solid var(--sobre-marca); outline-offset: 2px; }
+input:focus, select:focus { border-color: var(--marca); }
